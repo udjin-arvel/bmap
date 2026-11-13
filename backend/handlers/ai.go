@@ -20,13 +20,13 @@ var upgrader = websocket.Upgrader{
 func (a *API) EditorWS(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	if token == "" {
-		http.Error(w, "Forbidden", http.StatusForbidden)
+		http.Error(w, "Недостаточно прав", http.StatusForbidden)
 		return
 	}
 	u, err := a.Tokens.Decode(token)
 	if err != nil {
 		// Аналог websocket.close(4403) до accept: рукопожатие отклоняется с 403.
-		http.Error(w, "Forbidden", http.StatusForbidden)
+		http.Error(w, "Недостаточно прав", http.StatusForbidden)
 		return
 	}
 	row, err := a.Store.GetUserByUsername(u.Username)
@@ -35,7 +35,7 @@ func (a *API) EditorWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if row == nil || row.Role != auth.RoleEditor {
-		http.Error(w, "Forbidden", http.StatusForbidden)
+		http.Error(w, "Недостаточно прав", http.StatusForbidden)
 		return
 	}
 
@@ -97,7 +97,7 @@ func (a *API) ExpandNode(w http.ResponseWriter, r *http.Request) {
 func (a *API) GetJob(w http.ResponseWriter, r *http.Request) {
 	job, ok := a.Jobs.Get(r.PathValue("id"))
 	if !ok {
-		writeError(w, r, apperr.New(http.StatusNotFound, "UNKNOWN", "Job not found"))
+		writeError(w, r, apperr.New(http.StatusNotFound, "UNKNOWN", "Задача не найдена"))
 		return
 	}
 	writeJSON(w, http.StatusOK, job)

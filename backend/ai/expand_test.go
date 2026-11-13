@@ -31,13 +31,13 @@ func TestParseSteps(t *testing.T) {
 	}
 
 	cases := map[string]string{
-		`[]`:      "Invalid AI JSON",
-		`{"x":1}`: "steps: Field required",
-		`{"steps":[{"name":"a","nodeType":"PROCESS","anchor":true},{"name":"b","nodeType":"PROCESS"}]}`:                                                  "3–16",
-		`{"steps":[{"name":"a","nodeType":"PROCESS"},{"name":"b","nodeType":"PROCESS"},{"name":"c","nodeType":"PROCESS"}]}`:                              "mark the anchor",
-		`{"steps":[{"name":"a","nodeType":"BAD","anchor":true},{"name":"b","nodeType":"PROCESS"},{"name":"c","nodeType":"PROCESS"}]}`:                    "Invalid nodeType",
-		`{"steps":[{"name":"a","nodeType":"PROCESS","anchor":true,"color":"#fff"},{"name":"b","nodeType":"PROCESS"},{"name":"c","nodeType":"PROCESS"}]}`: "palette",
-		`{"steps":[{"name":"","nodeType":"PROCESS"}]}`: "at least 1 character",
+		`[]`:      "Некорректный ответ ИИ",
+		`{"x":1}`: "steps: поле обязательно",
+		`{"steps":[{"name":"a","nodeType":"PROCESS","anchor":true},{"name":"b","nodeType":"PROCESS"}]}`:                                                  "от 3 до 16",
+		`{"steps":[{"name":"a","nodeType":"PROCESS"},{"name":"b","nodeType":"PROCESS"},{"name":"c","nodeType":"PROCESS"}]}`:                              "якорный шаг",
+		`{"steps":[{"name":"a","nodeType":"BAD","anchor":true},{"name":"b","nodeType":"PROCESS"},{"name":"c","nodeType":"PROCESS"}]}`:                    "Некорректный тип узла",
+		`{"steps":[{"name":"a","nodeType":"PROCESS","anchor":true,"color":"#fff"},{"name":"b","nodeType":"PROCESS"},{"name":"c","nodeType":"PROCESS"}]}`: "палитр",
+		`{"steps":[{"name":"","nodeType":"PROCESS"}]}`: "хотя бы 1 символ",
 	}
 	for in, want := range cases {
 		if _, err := ParseSteps([]byte(in), anchor); err == nil || !strings.Contains(err.Error(), want) {

@@ -35,7 +35,7 @@ func NewDeepSeek(apiKey, baseURL, model string) *DeepSeek {
 // GenerateExpandSteps возвращает content ответа модели (строка с JSON).
 func (d *DeepSeek) GenerateExpandSteps(ctx context.Context, anchorName, anchorType string) ([]byte, error) {
 	if strings.TrimSpace(d.APIKey) == "" {
-		return nil, errors.New("DEEPSEEK_API_KEY is not configured")
+		return nil, errors.New("Ключ DEEPSEEK_API_KEY не задан")
 	}
 	userMsg := fmt.Sprintf("Построй производственный цикл вокруг узла «%s» (тип %s). Верни JSON с полем steps.", anchorName, anchorType)
 
@@ -66,7 +66,7 @@ func (d *DeepSeek) GenerateExpandSteps(ctx context.Context, anchorName, anchorTy
 		return nil, err
 	}
 	if res.StatusCode >= 400 {
-		return nil, fmt.Errorf("DeepSeek error '%s' for url '%s'", res.Status, url)
+		return nil, fmt.Errorf("Ошибка DeepSeek «%s» для %s", res.Status, url)
 	}
 
 	var data struct {
@@ -80,11 +80,11 @@ func (d *DeepSeek) GenerateExpandSteps(ctx context.Context, anchorName, anchorTy
 		return nil, err
 	}
 	if len(data.Choices) == 0 {
-		return nil, errors.New("Unexpected DeepSeek response shape")
+		return nil, errors.New("Неожиданный формат ответа DeepSeek")
 	}
 	content, ok := data.Choices[0].Message.Content.(string)
 	if !ok {
-		return nil, errors.New("Unexpected DeepSeek response shape")
+		return nil, errors.New("Неожиданный формат ответа DeepSeek")
 	}
 	return []byte(content), nil
 }

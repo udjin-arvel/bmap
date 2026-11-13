@@ -34,7 +34,7 @@ func TestEditorOnlyWithoutToken(t *testing.T) {
 	if rec.Code != 401 {
 		t.Fatalf("code %d", rec.Code)
 	}
-	want := `{"detail":{"code":"UNAUTHORIZED","detail":"Not authenticated"}}`
+	want := `{"detail":{"code":"UNAUTHORIZED","detail":"Требуется авторизация"}}`
 	if strings.TrimSpace(rec.Body.String()) != want {
 		t.Fatalf("body %s", rec.Body.String())
 	}
@@ -62,10 +62,10 @@ func TestCreateNodeValidation(t *testing.T) {
 	}
 	for field, want := range map[string]string{
 		"name":      "string_too_short",
-		"nodeType":  "literal_error: Input should be 'PROCESS', 'ACTOR', 'RESOURCE' or 'LOGISTICS'",
+		"nodeType":  "literal_error: Допустимые значения: 'PROCESS', 'ACTOR', 'RESOURCE' или 'LOGISTICS'",
 		"positionX": "float_type",
 		"positionY": "missing",
-		"color":     "value_error: Value error, Color not in palette",
+		"color":     "value_error: Цвет не из палитры",
 	} {
 		if !strings.HasPrefix(types[field], want) {
 			t.Errorf("%s: got %q want prefix %q", field, types[field], want)
@@ -81,10 +81,10 @@ func TestBodyErrors(t *testing.T) {
 	if rec := do(mux, "POST", "/api/auth/register", `{bad`, nil); rec.Code != 422 || !strings.Contains(rec.Body.String(), "json_invalid") {
 		t.Fatalf("bad json: %d %s", rec.Code, rec.Body.String())
 	}
-	if rec := do(mux, "POST", "/api/auth/register", `{"username":"ab","password":"123"}`, nil); rec.Code != 422 || !strings.Contains(rec.Body.String(), "at least 4 characters") {
+	if rec := do(mux, "POST", "/api/auth/register", `{"username":"ab","password":"123"}`, nil); rec.Code != 422 || !strings.Contains(rec.Body.String(), "не меньше 4 символов") {
 		t.Fatalf("short pw: %d %s", rec.Code, rec.Body.String())
 	}
-	if rec := do(mux, "GET", "/nope", ``, nil); rec.Code != 404 || strings.TrimSpace(rec.Body.String()) != `{"detail":"Not Found"}` {
+	if rec := do(mux, "GET", "/nope", ``, nil); rec.Code != 404 || strings.TrimSpace(rec.Body.String()) != `{"detail":"Не найдено"}` {
 		t.Fatalf("404: %d %s", rec.Code, rec.Body.String())
 	}
 }
@@ -111,13 +111,13 @@ func TestParseBatch(t *testing.T) {
 	if err != nil || len(items) != 2 || items[0].ID != "a" || len(items[1].Patch) != 0 {
 		t.Fatalf("%v %#v", err, items)
 	}
-	if _, err := parseBatch([]byte(`[{"positionX":1}]`)); err == nil || !strings.Contains(err.Error(), "Invalid batch payload") {
+	if _, err := parseBatch([]byte(`[{"positionX":1}]`)); err == nil || !strings.Contains(err.Error(), "Некорректный пакет изменений") {
 		t.Fatalf("missing id: %v", err)
 	}
 	if _, err := parseBatch([]byte(`[{"id":"a","color":"red"}]`)); err == nil {
 		t.Fatal("bad color accepted")
 	}
-	if _, err := parseBatch([]byte(`{`)); err == nil || !strings.Contains(err.Error(), "Invalid JSON body") {
+	if _, err := parseBatch([]byte(`{`)); err == nil || !strings.Contains(err.Error(), "Некорректное тело JSON") {
 		t.Fatalf("bad json: %v", err)
 	}
 	_ = graph.Patch{}

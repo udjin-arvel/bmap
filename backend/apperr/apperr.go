@@ -1,4 +1,4 @@
-// Package apperr — ошибки API в формате, совместимом с FastAPI-версией.
+// Package apperr — ошибки API в формате Okapi.
 package apperr
 
 import "fmt"

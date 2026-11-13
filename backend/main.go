@@ -51,7 +51,7 @@ func run(cfg *config.Settings, addr string, debug bool) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	// --- startup (аналог lifespan в app/main.py) ---
+	// --- startup ---
 	store, err := db.OpenSQLite(cfg.SQLitePath)
 	if err != nil {
 		return err

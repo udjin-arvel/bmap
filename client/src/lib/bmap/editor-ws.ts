@@ -1,4 +1,4 @@
-import { getServer, getToken, isDemo } from "./api";
+import { DEMO_SERVER, getServer, getToken, isDemo } from "./api";
 import type { GraphSnapshot, MarketEdge, MarketNode } from "./types";
 
 export type AiWsMessage =

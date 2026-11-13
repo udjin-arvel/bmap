@@ -30,7 +30,7 @@ func (a *API) Register(w http.ResponseWriter, r *http.Request) {
 
 	username = strings.TrimSpace(username)
 	if username == "" {
-		writeError(w, r, apperr.New(http.StatusUnprocessableEntity, "VALIDATION_ERROR", "Username is required"))
+		writeError(w, r, apperr.New(http.StatusUnprocessableEntity, "VALIDATION_ERROR", "Укажите логин"))
 		return
 	}
 	existing, err := a.Store.GetUserByUsername(username)
@@ -39,7 +39,7 @@ func (a *API) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if existing != nil {
-		writeError(w, r, apperr.New(http.StatusConflict, "USERNAME_TAKEN", "Username already taken"))
+		writeError(w, r, apperr.New(http.StatusConflict, "USERNAME_TAKEN", "Такой логин уже занят"))
 		return
 	}
 	if err := a.Store.CreateUser(username, password, auth.RoleViewer); err != nil {
@@ -76,7 +76,7 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if row == nil || !db.VerifyPassword(password, row.PasswordHash) {
-		writeError(w, r, unauthorized("Invalid credentials"))
+		writeError(w, r, unauthorized("Неверный логин или пароль"))
 		return
 	}
 

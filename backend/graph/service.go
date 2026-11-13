@@ -13,7 +13,7 @@ import (
 	"bmap-api/db"
 )
 
-var errNodeNotFound = apperr.New(http.StatusNotFound, "NODE_NOT_FOUND", "Node not found")
+var errNodeNotFound = apperr.New(http.StatusNotFound, "NODE_NOT_FOUND", "Узел не найден")
 
 type Service struct {
 	Driver neo4j.DriverWithContext
@@ -316,7 +316,7 @@ func (s *Service) CreateNode(ctx context.Context, body NodeCreate) (Node, error)
 		return Node{}, err
 	}
 	if exists {
-		return Node{}, apperr.New(http.StatusBadRequest, "UNKNOWN", "Node id already exists")
+		return Node{}, apperr.New(http.StatusBadRequest, "UNKNOWN", "Узел с таким id уже есть")
 	}
 	if _, err := s.Run(ctx, "CREATE (n:MarketNode) SET n = $props", map[string]any{"props": props}); err != nil {
 		return Node{}, err
@@ -406,7 +406,7 @@ func (s *Service) InsertEdge(ctx context.Context, sourceID, targetID, createdAt 
 
 func (s *Service) CreateEdge(ctx context.Context, sourceID, targetID string) (Edge, error) {
 	if sourceID == targetID {
-		return Edge{}, apperr.New(http.StatusBadRequest, "SELF_CONNECTION", "Cannot connect node to itself")
+		return Edge{}, apperr.New(http.StatusBadRequest, "SELF_CONNECTION", "Нельзя соединить узел с самим собой")
 	}
 	params := map[string]any{"sourceId": sourceID, "targetId": targetID}
 
@@ -428,7 +428,7 @@ func (s *Service) CreateEdge(ctx context.Context, sourceID, targetID string) (Ed
 		return Edge{}, err
 	}
 	if len(recs) > 0 {
-		return Edge{}, apperr.New(http.StatusBadRequest, "DUPLICATE_EDGE", "Edge already exists")
+		return Edge{}, apperr.New(http.StatusBadRequest, "DUPLICATE_EDGE", "Такая связь уже существует")
 	}
 
 	cycle, err := s.WouldCreateCycle(ctx, sourceID, targetID)
@@ -436,7 +436,7 @@ func (s *Service) CreateEdge(ctx context.Context, sourceID, targetID string) (Ed
 		return Edge{}, err
 	}
 	if cycle {
-		return Edge{}, apperr.New(http.StatusBadRequest, "CYCLE_DETECTED", "Edge would create a cycle")
+		return Edge{}, apperr.New(http.StatusBadRequest, "CYCLE_DETECTED", "Связь создаст цикл")
 	}
 	return s.InsertEdge(ctx, sourceID, targetID, db.NowISO())
 }
@@ -447,7 +447,7 @@ func (s *Service) DeleteEdge(ctx context.Context, id string) error {
 		return err
 	}
 	if len(recs) == 0 || RecInt(recs[0], "c") == 0 {
-		return apperr.New(http.StatusNotFound, "NODE_NOT_FOUND", "Edge not found")
+		return apperr.New(http.StatusNotFound, "NODE_NOT_FOUND", "Связь не найдена")
 	}
 	return nil
 }

@@ -1,5 +1,5 @@
 # Curl-команды для локальной разработки Go API.
-# Маршруты совпадают с backend-python (FastAPI).
+# Маршруты совпадают с backend-python (Okapi).
 #
 # Linux / macOS / Git Bash / WSL:
 #   make -C backend help

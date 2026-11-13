@@ -9,7 +9,7 @@ import (
 	"bmap-api/graph"
 )
 
-const colorError = "Value error, Color not in palette"
+const colorError = "Цвет не из палитры"
 
 func (o *object) color(key string) (*string, bool) {
 	c, present := o.optString(key, 0)
@@ -171,9 +171,9 @@ func (a *API) BatchPatch(w http.ResponseWriter, r *http.Request) {
 func parseBatch(raw []byte) ([]graph.BatchItem, error) {
 	var probe any
 	if err := json.Unmarshal(raw, &probe); err != nil {
-		return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "Invalid JSON body")
+		return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "Некорректное тело JSON")
 	}
-	invalid := apperr.New(http.StatusBadRequest, "UNKNOWN", "Invalid batch payload")
+	invalid := apperr.New(http.StatusBadRequest, "UNKNOWN", "Некорректный пакет изменений")
 	var list []json.RawMessage
 	if err := json.Unmarshal(raw, &list); err != nil || list == nil {
 		return nil, invalid

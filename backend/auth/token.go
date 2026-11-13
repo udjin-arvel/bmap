@@ -49,7 +49,7 @@ func (t *Tokens) Decode(raw string) (User, error) {
 	tok, err := jwt.Parse(raw, func(*jwt.Token) (any, error) { return t.Secret, nil },
 		jwt.WithValidMethods([]string{m.Alg()}))
 	if err != nil || !tok.Valid {
-		return User{}, apperr.New(http.StatusUnauthorized, "UNAUTHORIZED", "Invalid or expired token")
+		return User{}, apperr.New(http.StatusUnauthorized, "UNAUTHORIZED", "Токен недействителен или истёк")
 	}
 	claims, ok := tok.Claims.(jwt.MapClaims)
 	if !ok {
@@ -63,4 +63,4 @@ func (t *Tokens) Decode(raw string) (User, error) {
 	return User{Username: username, Role: role}, nil
 }
 
-var errInvalidPayload = apperr.New(http.StatusUnauthorized, "UNAUTHORIZED", "Invalid token payload")
+var errInvalidPayload = apperr.New(http.StatusUnauthorized, "UNAUTHORIZED", "Некорректные данные токена")

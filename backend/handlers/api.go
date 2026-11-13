@@ -47,9 +47,9 @@ func (a *API) Health(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// NotFound — ответ для неизвестных маршрутов, как в FastAPI.
+// NotFound — ответ для неизвестных маршрутов, как в Okapi.
 func NotFound(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusNotFound, map[string]string{"detail": "Not Found"})
+	writeJSON(w, http.StatusNotFound, map[string]string{"detail": "Не найдено"})
 }
 
 func unauthorized(detail string) error {
@@ -71,7 +71,7 @@ func rawToken(r *http.Request) string {
 func (a *API) currentUser(r *http.Request) (auth.User, error) {
 	raw := rawToken(r)
 	if raw == "" {
-		return auth.User{}, unauthorized("Not authenticated")
+		return auth.User{}, unauthorized("Требуется авторизация")
 	}
 	u, err := a.Tokens.Decode(raw)
 	if err != nil {
@@ -82,7 +82,7 @@ func (a *API) currentUser(r *http.Request) (auth.User, error) {
 		return auth.User{}, err
 	}
 	if row == nil {
-		return auth.User{}, unauthorized("User not found")
+		return auth.User{}, unauthorized("Пользователь не найден")
 	}
 	return auth.User{Username: u.Username, Role: row.Role}, nil
 }
@@ -93,7 +93,7 @@ func (a *API) requireEditor(r *http.Request) (auth.User, error) {
 		return u, err
 	}
 	if u.Role != auth.RoleEditor {
-		return u, apperr.New(http.StatusForbidden, "FORBIDDEN", "Editor role required")
+		return u, apperr.New(http.StatusForbidden, "FORBIDDEN", "Нужна роль редактора")
 	}
 	return u, nil
 }

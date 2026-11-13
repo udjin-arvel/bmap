@@ -10,7 +10,7 @@
 | Компонент | Назначение |
 |-----------|------------|
 | **web** | Собранный клиент (TanStack Start) + nginx: UI и прокси `/api` → API |
-| **api** | FastAPI: граф, auth, DeepSeek, WebSocket |
+| **api** | Okapi: граф, auth, DeepSeek, WebSocket |
 | **neo4j** | Граф `MarketNode` / `NEXT_STEP` |
 | **SQLite** (volume `api_data`) | Пользователи, `applied_seeds` |
 

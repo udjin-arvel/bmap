@@ -42,7 +42,7 @@ const KNOWN_CODES = new Set(Object.keys(ERROR_MESSAGES));
 
 /**
  * Turns a backend error body into an ApiError. Accepts both the spec format
- * `{ detail, code }` and FastAPI's wrapped `{ detail: { detail, code } }`.
+ * `{ detail, code }` and Okapi's wrapped `{ detail: { detail, code } }`.
  */
 export function parseApiError(status: number, body: unknown): ApiError {
   let code: string | undefined;
@@ -59,7 +59,7 @@ export function parseApiError(status: number, body: unknown): ApiError {
     if (Array.isArray(b["detail"])) {
       const first = b["detail"][0] as Record<string, unknown> | undefined;
       if (first && typeof first["msg"] === "string") detail = first["msg"];
-      if (detail && /palette/i.test(detail)) code = "INVALID_COLOR";
+      if (detail && /palette|палитр/i.test(detail)) code = "INVALID_COLOR";
     }
   }
   if (!code || !KNOWN_CODES.has(code)) {

@@ -81,22 +81,22 @@ func (e *Expander) removeAIChainsAround(ctx context.Context, anchorID string) er
 }
 
 func invalidAI(msg string) error {
-	return apperr.New(http.StatusBadRequest, "UNKNOWN", "Invalid AI JSON: "+msg)
+	return apperr.New(http.StatusBadRequest, "UNKNOWN", "Некорректный ответ ИИ: "+msg)
 }
 
 // ParseSteps валидирует ответ модели (ExpandStepsPayload + _parse_steps).
 func ParseSteps(content []byte, anchor graph.Node) ([]Step, error) {
 	var payload map[string]json.RawMessage
 	if err := json.Unmarshal(content, &payload); err != nil {
-		return nil, invalidAI("response must be a JSON object")
+		return nil, invalidAI("ответ должен быть JSON-объектом")
 	}
 	rawSteps, ok := payload["steps"]
 	if !ok {
-		return nil, invalidAI("steps: Field required")
+		return nil, invalidAI("steps: поле обязательно")
 	}
 	var items []json.RawMessage
 	if err := json.Unmarshal(rawSteps, &items); err != nil {
-		return nil, invalidAI("steps: Input should be a valid list")
+		return nil, invalidAI("steps: ожидается список")
 	}
 
 	steps := make([]Step, 0, len(items))
@@ -112,10 +112,10 @@ func ParseSteps(content []byte, anchor graph.Node) ([]Step, error) {
 			return nil, invalidAI(fmt.Sprintf("steps.%d: %v", i, err))
 		}
 		if rs.Name == nil || *rs.Name == "" {
-			return nil, invalidAI(fmt.Sprintf("steps.%d.name: String should have at least 1 character", i))
+			return nil, invalidAI(fmt.Sprintf("steps.%d.name: строка должна содержать хотя бы 1 символ", i))
 		}
 		if rs.NodeType == nil {
-			return nil, invalidAI(fmt.Sprintf("steps.%d.nodeType: Field required", i))
+			return nil, invalidAI(fmt.Sprintf("steps.%d.nodeType: поле обязательно", i))
 		}
 		steps = append(steps, Step{
 			Name:        *rs.Name,
@@ -127,7 +127,7 @@ func ParseSteps(content []byte, anchor graph.Node) ([]Step, error) {
 	}
 
 	if len(steps) < 3 || len(steps) > 16 {
-		return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "AI must return 3–16 steps")
+		return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "ИИ должен вернуть от 3 до 16 шагов")
 	}
 
 	anchorIdx := -1
@@ -147,15 +147,15 @@ func ParseSteps(content []byte, anchor graph.Node) ([]Step, error) {
 		}
 	}
 	if anchorIdx < 0 {
-		return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "AI response must mark the anchor step")
+		return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "В ответе ИИ должен быть отмечен якорный шаг")
 	}
 
 	for i := range steps {
 		if !graph.IsNodeType(steps[i].NodeType) {
-			return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "Invalid nodeType: "+steps[i].NodeType)
+			return nil, apperr.New(http.StatusBadRequest, "UNKNOWN", "Некорректный тип узла: "+steps[i].NodeType)
 		}
 		if c := steps[i].Color; c != nil && !graph.ColorPalette[*c] {
-			return nil, apperr.New(http.StatusBadRequest, "INVALID_COLOR", "Color not in palette")
+			return nil, apperr.New(http.StatusBadRequest, "INVALID_COLOR", "Цвет не из палитры")
 		}
 		steps[i].Anchor = i == anchorIdx
 	}
@@ -258,7 +258,7 @@ func (e *Expander) applyExpandSteps(ctx context.Context, anchorID string, steps 
 			return nil, nil, err
 		}
 		if cycle {
-			return nil, nil, apperr.New(http.StatusBadRequest, "CYCLE_DETECTED", "AI chain would create a cycle")
+			return nil, nil, apperr.New(http.StatusBadRequest, "CYCLE_DETECTED", "Цепочка ИИ создаст цикл")
 		}
 		edge, err := e.Graph.InsertEdge(ctx, src, tgt, now)
 		if err != nil {
@@ -344,7 +344,7 @@ func (e *Expander) StartExpand(ctx context.Context, anchorID string, force bool)
 			return "", err
 		}
 		if has {
-			return "", apperr.New(http.StatusConflict, "AI_CHAIN_EXISTS", "Node already has an AI continuation; confirm to replace")
+			return "", apperr.New(http.StatusConflict, "AI_CHAIN_EXISTS", "У узла уже есть AI-продолжение — подтвердите замену")
 		}
 	}
 	jobID := e.Jobs.Create(anchorID)

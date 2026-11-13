@@ -1,5 +1,5 @@
 /**
- * In-browser stand-in for the FastAPI backend, used in demo mode.
+ * In-browser stand-in for the Okapi backend, used in demo mode.
  * Mirrors the spec's endpoints, roles and edge validation rules so the
  * client behaves the same against either transport.
  */
@@ -175,7 +175,7 @@ function requireEditor(token: string | null) {
 
 function checkColor(color: string | null | undefined) {
   if (color != null && !PALETTE_HEX.includes(color))
-    throw new ApiError(400, "INVALID_COLOR", "Color not in palette");
+    throw new ApiError(400, "INVALID_COLOR", "Цвет не из палитры");
 }
 
 function withMeta(n: MarketNode): MarketNode {
@@ -247,7 +247,7 @@ export const mockBackend = {
     const u = db.users.find((x) => x.username === body.username && x.password === body.password);
     if (!u) {
       await delay(null);
-      throw new ApiError(401, "UNAUTHORIZED", "Invalid credentials");
+      throw new ApiError(401, "UNAUTHORIZED", "Неверный логин или пароль");
     }
     if (body.editorKey && body.editorKey === DEMO_EDITOR_KEY) {
       u.role = "editor";
@@ -263,12 +263,12 @@ export const mockBackend = {
     const username = body.username.trim();
     if (!username) {
       await delay(null);
-      throw new ApiError(422, "UNKNOWN", "Username is required");
+      throw new ApiError(422, "UNKNOWN", "Укажите логин");
     }
     const db = load();
     if (db.users.some((x) => x.username === username)) {
       await delay(null);
-      throw new ApiError(409, "USERNAME_TAKEN", "Username already taken");
+      throw new ApiError(409, "USERNAME_TAKEN", "Такой логин уже занят");
     }
     db.users.push({ username, password: body.password, role: "viewer" });
     save(db);
@@ -378,7 +378,7 @@ export const mockBackend = {
     const db = load();
     const { sourceId, targetId } = body;
     if (sourceId === targetId)
-      throw new ApiError(400, "SELF_CONNECTION", "Cannot connect node to itself");
+      throw new ApiError(400, "SELF_CONNECTION", "Нельзя соединить узел с самим собой");
     if (!db.nodes.some((n) => n.id === sourceId) || !db.nodes.some((n) => n.id === targetId))
       throw new ApiError(404, "NODE_NOT_FOUND");
     if (db.edges.some((e) => e.sourceId === sourceId && e.targetId === targetId))
@@ -410,7 +410,7 @@ export const mockBackend = {
     const anchor = db.nodes.find((n) => n.id === nodeId);
     if (!anchor) throw new ApiError(404, "NODE_NOT_FOUND");
     if (!force && demoHasAiOutgoing(db, nodeId)) {
-      throw new ApiError(409, "AI_CHAIN_EXISTS", "Node already has an AI continuation");
+      throw new ApiError(409, "AI_CHAIN_EXISTS", "У узла уже есть AI-продолжение — подтвердите замену");
     }
     if (force) demoRemoveAiAround(db, nodeId);
 
@@ -463,7 +463,7 @@ export const mockBackend = {
   async getAiJob(token: string | null, jobId: string): Promise<AiJobResult> {
     requireEditor(token);
     const job = demoAiJobs.get(jobId);
-    if (!job) throw new ApiError(404, "NODE_NOT_FOUND", "Job not found");
+    if (!job) throw new ApiError(404, "NODE_NOT_FOUND", "Задача не найдена");
     return delay(job);
   },
 };

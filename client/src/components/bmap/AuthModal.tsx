@@ -79,9 +79,12 @@ export function AuthModal() {
 
   return (
     <Dialog open={open} onOpenChange={(o) => set({ authOpen: o })}>
-      <DialogContent className="sm:max-w-sm">
-        <form onSubmit={submit} className="space-y-4">
-          <DialogHeader>
+      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-sm">
+        <form
+          onSubmit={submit}
+          className="bmap-scroll max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto px-6 py-6"
+        >
+          <DialogHeader className="pr-6">
             <DialogTitle className="font-display">
               {isRegister ? "Регистрация в BMap" : "Вход в BMap"}
             </DialogTitle>
@@ -199,7 +202,7 @@ export function AuthModal() {
                     !demo ? "border-foreground bg-card" : "text-muted-foreground",
                   )}
                 >
-                  FastAPI
+                  Okapi
                 </button>
               </div>
               {!demo && (
@@ -213,7 +216,7 @@ export function AuthModal() {
               <p className="text-xs text-muted-foreground">
                 {demo
                   ? `Данные хранятся в этом браузере. Логин viewer / viewer, ключ редактора: ${DEMO_EDITOR_KEY}. Регистрация тоже работает локально.`
-                  : "Адрес бэкенда без /api. «/» — тот же домен. Регистрация доступна только для FastAPI."}
+                  : "Адрес бэкенда без /api. «/» — тот же домен. Регистрация доступна только для Okapi."}
               </p>
             </div>
           </details>

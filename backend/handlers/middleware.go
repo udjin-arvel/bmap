@@ -37,7 +37,7 @@ func CORS(origins []string) func(http.Handler) http.Handler {
 				if !allowed[origin] {
 					w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 					w.WriteHeader(http.StatusBadRequest)
-					_, _ = w.Write([]byte("Disallowed CORS origin"))
+					_, _ = w.Write([]byte("Источник запроса не разрешён"))
 					return
 				}
 				h.Set("Access-Control-Allow-Origin", origin)
