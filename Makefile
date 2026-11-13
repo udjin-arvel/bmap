@@ -10,7 +10,8 @@ WEB_URL   ?= http://127.0.0.1:$(WEB_PORT)/api/health
 .PHONY: help env up up-build up-d down restart ps logs logs-api logs-web \
         dev-infra dev-client backend-venv backend-install backend-dev \
         client-install client-dev client-build client-test client-lint \
-        health shell-api shell-neo4j clean clean-volumes rebuild rebuild-api
+        health shell-api shell-neo4j clean clean-volumes rebuild rebuild-api \
+        deploy
 
 help: ## Список команд
 	@echo BMap — доступные цели:
@@ -79,6 +80,26 @@ client-test: ## Vitest
 
 client-lint: ## ESLint клиента
 	cd client && (bun run lint 2>/dev/null || npm run lint)
+
+deploy: ## Прод на VPS: git pull, сборка, health, vhost nginx
+	@test -f $(ENV_FILE) || { echo "Нет $(ENV_FILE). Создайте его из .env.example и задайте секреты."; exit 1; }
+	git pull --ff-only
+	$(COMPOSE) up -d --build --remove-orphans
+	@i=0; \
+	until curl -sf "$(WEB_URL)" >/dev/null; do \
+	  i=$$((i+1)); \
+	  if [ $$i -ge 30 ]; then echo "Нет ответа $(WEB_URL)"; exit 1; fi; \
+	  sleep 2; \
+	done
+	@curl -sf "$(WEB_URL)"; echo
+	@if command -v nginx >/dev/null 2>&1 && [ -d /etc/nginx/sites-available ]; then \
+	  sudo cp docker/bmap.arvelov.space.conf /etc/nginx/sites-available/bmap.arvelov.space.conf; \
+	  sudo ln -sfn /etc/nginx/sites-available/bmap.arvelov.space.conf /etc/nginx/sites-enabled/bmap.arvelov.space.conf; \
+	  sudo nginx -t; \
+	  sudo systemctl reload nginx; \
+	else \
+	  echo "Хостовый nginx не найден — vhost не обновлялся"; \
+	fi
 
 health: ## Проверить /api/health (API :18400 и web :$(WEB_PORT))
 	@echo "API direct: $(API_URL)"

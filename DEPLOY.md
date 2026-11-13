@@ -137,12 +137,10 @@ $env:SQLITE_PATH="./data/app.db"
 1. Установите Docker и Compose.
 2. Скопируйте проект на сервер (git clone / rsync). **Не** коммитьте `.env`.
 3. Создайте `.env` с **продакшен-секретами** и реальным `DEEPSEEK_API_KEY`.
-4. Запуск:
+4. Запуск и vhost:
 
    ```bash
-   make up-d
-   docker compose ps
-   make health
+   make deploy
    ```
 
 5. Порты compose слушают только `127.0.0.1`. Снаружи открыты 80/443 хостового nginx.
@@ -173,12 +171,13 @@ nginx -t && systemctl reload nginx
 
 ## Обновление релиза
 
+На VPS из каталога проекта:
+
 ```bash
-git pull
-make up-d          # пересборка при изменении Dockerfile/кода
-# или явно:
-docker compose up -d --build
+make deploy
 ```
+
+Команда делает `git pull --ff-only`, `docker compose up -d --build`, ждёт `GET /api/health` через web и, если на хосте есть nginx, ставит `docker/bmap.arvelov.space.conf` и делает `nginx -t && systemctl reload nginx`.
 
 При изменении только `.env`: `docker compose up -d --force-recreate api`.
 
