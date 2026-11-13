@@ -1,0 +1,25 @@
+# Git / IDE
+.git
+.gitignore
+.cursor
+.project
+
+# Env (secrets stay on host)
+.env
+.env.*
+!.env.example
+
+# Python backend (separate image)
+backend/.venv
+backend/**/__pycache__
+
+# Client — never copy host node_modules into Linux build
+client/node_modules
+client/.output
+client/.nitro
+client/.wrangler
+client/dist
+client/.vite
+
+# Local data
+**/data/

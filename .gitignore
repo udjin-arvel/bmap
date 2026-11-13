@@ -1,0 +1,35 @@
+.env
+.env.local
+.env.*.local
+
+# Project-local notes and IDE agent state
+.project/
+.cursor/
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+.venv/
+venv/
+backend/data/
+data/
+*.db
+
+# Frontend (client/)
+client/node_modules/
+client/dist/
+client/dist-ssr/
+client/.output/
+client/.vinxi/
+client/.tanstack/
+client/.nitro/
+client/.wrangler/
+client/.dev.vars
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

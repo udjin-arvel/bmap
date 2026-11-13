@@ -1,0 +1,102 @@
+[
+  {
+    "id": "base-forest",
+    "name": "Лес и деревообработка",
+    "nodeType": "PROCESS",
+    "description": "Заготовка, первичная переработка древесины и цепочки поставок.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 0,
+    "color": "#27AE60"
+  },
+  {
+    "id": "base-construction",
+    "name": "Строительство",
+    "nodeType": "PROCESS",
+    "description": "Жилое и коммерческое строительство, материалы и подрядчики.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 120,
+    "color": "#4A90D9"
+  },
+  {
+    "id": "base-agriculture",
+    "name": "Сельское хозяйство",
+    "nodeType": "PROCESS",
+    "description": "Выращивание культур, животноводство, переработка на месте.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 240,
+    "color": "#27AE60"
+  },
+  {
+    "id": "base-food",
+    "name": "Продукты питания",
+    "nodeType": "PROCESS",
+    "description": "Производство, упаковка и дистрибуция food & beverage.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 360,
+    "color": "#E67E22"
+  },
+  {
+    "id": "base-metals",
+    "name": "Металлургия",
+    "nodeType": "PROCESS",
+    "description": "Добыча руды, выплавка, прокат и металлоизделия.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 480,
+    "color": "#7F8C8D"
+  },
+  {
+    "id": "base-energy",
+    "name": "Энергетика",
+    "nodeType": "PROCESS",
+    "description": "Генерация, сети, нефть и газ, ВИЭ.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 600,
+    "color": "#C0392B"
+  },
+  {
+    "id": "base-logistics",
+    "name": "Логистика",
+    "nodeType": "PROCESS",
+    "description": "Склады, перевозки, последняя миля и таможня.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 720,
+    "color": "#8E44AD"
+  },
+  {
+    "id": "base-retail",
+    "name": "Розничная торговля",
+    "nodeType": "PROCESS",
+    "description": "Офлайн и онлайн-ритейл, маркетплейсы, дистрибуция.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 840,
+    "color": "#E67E22"
+  },
+  {
+    "id": "base-realestate",
+    "name": "Недвижимость",
+    "nodeType": "PROCESS",
+    "description": "Девелопмент, аренда, управление объектами.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 960,
+    "color": "#4A90D9"
+  },
+  {
+    "id": "base-digital",
+    "name": "Цифровые услуги",
+    "nodeType": "PROCESS",
+    "description": "SaaS, телеком, IT-аутсорсинг и платформы.",
+    "descriptionPinned": true,
+    "positionX": 0,
+    "positionY": 1080,
+    "color": "#8E44AD"
+  }
+]
