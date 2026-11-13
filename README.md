@@ -6,10 +6,10 @@
 
 1. Скопируйте `.env.example` в `.env` и задайте секреты (`JWT_SECRET`, `NEO4J_PASSWORD`, `EDITOR_KEY`).
 2. `make up-build` или `docker compose up --build`
-3. Откройте http://localhost:8080 — UI; API доступен по `/api/*` через nginx.
+3. Откройте http://127.0.0.1:18480 — UI; API доступен по `/api/*` через nginx.
 4. Вход: пользователь `viewer`, пароль из `SEED_VIEWER_PASSWORD` (по умолчанию `viewer`), или **регистрация** (`POST /api/auth/register`, роль `viewer`). Ключ редактора — значение `EDITOR_KEY`.
 
-Проверка API: `GET http://localhost:8080/api/health` или `http://localhost:8000/api/health` (порт API проброшен для локальной разработки).
+Проверка API: `GET http://127.0.0.1:18480/api/health` или `http://127.0.0.1:18400/api/health`. Оба порта только на localhost.
 
 ## Локальная разработка без пересборки web
 
@@ -21,7 +21,7 @@ copy .env.example .env.local
 bun run dev
 ```
 
-В настройках входа укажите сервер `/` (или оставьте `VITE_API_URL=/` в `.env.local`). Vite проксирует `/api` на `http://127.0.0.1:8000`.
+В настройках входа укажите сервер `/` (или оставьте `VITE_API_URL=/` в `.env.local`). Vite проксирует `/api` на `http://127.0.0.1:18400`.
 
 ## Backend отдельно
 

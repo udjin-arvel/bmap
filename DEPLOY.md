@@ -47,7 +47,8 @@
    | `EDITOR_KEY` | Ключ редактора в UI |
    | `SEED_VIEWER_PASSWORD` | Пароль пользователя `viewer` при первом старте |
    | `DEEPSEEK_API_KEY` | Ключ DeepSeek (AI на узлах); без него expand упадёт с ошибкой |
-   | `WEB_PORT` | Порт UI на хосте (по умолчанию **8080**) |
+   | `WEB_PORT` | Порт UI на localhost (по умолчанию **18480**) |
+   | `API_PORT` | Порт API на localhost (по умолчанию **18400**) |
 
 4. Опционально: `DEEPSEEK_BASE_URL`, `DEEPSEEK_MODEL`, `CORS_ORIGINS` (для dev с другого origin).
 
@@ -63,9 +64,10 @@ make up-build
 make up-d
 ```
 
-- UI: http://localhost:8080 (или `WEB_PORT` из `.env`)  
-- API напрямую: http://localhost:8000  
-- Health: http://localhost:8080/api/health — `make health`
+- UI: http://127.0.0.1:18480 (или `WEB_PORT` из `.env`)  
+- API напрямую: http://127.0.0.1:18400  
+- Health: http://127.0.0.1:18480/api/health — `make health`  
+- Neo4j на хост не публикуется, Bolt только внутри compose (`bolt://neo4j:7687`)
 
 **Вход:** логин `viewer`, пароль — `SEED_VIEWER_PASSWORD`, ключ редактора — `EDITOR_KEY`. Новые пользователи — регистрация в UI или `POST /api/auth/register` (роль `viewer`).
 
@@ -83,7 +85,7 @@ make up-d
 make dev-infra
 ```
 
-Поднимаются **neo4j** и **api** (порт **8000**).
+Поднимаются **neo4j** и **api** (на хосте `127.0.0.1:18400`).
 
 **Терминал 2:**
 
@@ -93,7 +95,7 @@ cp .env.example .env.local   # Windows: copy .env.example .env.local
 make client-dev              # из корня — или bun run dev / npm run dev
 ```
 
-В `.env.local` должно быть `VITE_API_URL=/`. Vite проксирует `/api` на `http://127.0.0.1:8000` (см. `client/vite.config.ts`).
+В `.env.local` должно быть `VITE_API_URL=/`. Vite проксирует `/api` на `http://127.0.0.1:18400` (см. `client/vite.config.ts`).
 
 В модалке входа укажите сервер **`/`** (same-origin относительно dev-сервера).
 
@@ -143,24 +145,19 @@ $env:SQLITE_PATH="./data/app.db"
    make health
    ```
 
-5. **Не открывайте** порт 8000 наружу, если перед приложением стоит reverse proxy — достаточно проброса **web:80** на localhost.
+5. Порты compose слушают только `127.0.0.1`. Снаружи открыты 80/443 хостового nginx.
 
 ### Reverse proxy и HTTPS
 
-На хосте — **nginx** или **Caddy** перед контейнером `web`:
+Готовый vhost: [docker/bmap.arvelov.space.conf](docker/bmap.arvelov.space.conf). Он проксирует `https://bmap.arvelov.space` на `http://127.0.0.1:18480` и прокидывает WebSocket (`/api/ws`). Сертификат тот же, что у thebook.
 
-- Внешний URL: `https://bmap.example.com`
-- `proxy_pass http://127.0.0.1:8080` (или ваш `WEB_PORT`)
-- Обязательно для WebSocket AI:
+```bash
+cp docker/bmap.arvelov.space.conf /etc/nginx/sites-available/bmap.arvelov.space.conf
+ln -sfn /etc/nginx/sites-available/bmap.arvelov.space.conf /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+```
 
-  ```nginx
-  proxy_http_version 1.1;
-  proxy_set_header Upgrade $http_upgrade;
-  proxy_set_header Connection "upgrade";
-  proxy_read_timeout 3600s;
-  ```
-
-- TLS: certbot / Caddy automatic HTTPS.
+Статический `root /opt/bmap/dist` в этом vhost не нужен: страницы отдаёт Nitro в контейнере `web`, `/api` — его nginx на контейнер `api`.
 
 Собранный клиент в образе `web` собирается с **`NITRO_PRESET=node-server`** (см. `client/Dockerfile`). Без этого Nitro отдаёт Cloudflare Worker, Node не слушает порт — nginx покажет **502**.
 

@@ -3,8 +3,8 @@
 
 COMPOSE   ?= docker compose
 ENV_FILE  ?= .env
-WEB_PORT  ?= 8080
-API_URL   ?= http://127.0.0.1:8000/api/health
+WEB_PORT  ?= 18480
+API_URL   ?= http://127.0.0.1:18400/api/health
 WEB_URL   ?= http://127.0.0.1:$(WEB_PORT)/api/health
 
 .PHONY: help env up up-build up-d down restart ps logs logs-api logs-web \
@@ -50,11 +50,11 @@ logs-web: ## Логи web (nginx + Nitro)
 dev-infra: env ## Только Neo4j + API (для Vite на хосте)
 	$(COMPOSE) up neo4j api
 
-dev-client: ## Подсказка: клиент с прокси /api -> :8000
+dev-client: ## Подсказка: клиент с прокси /api -> :18400
 	@echo "cd client && copy .env.example .env.local  (Windows)"
 	@echo "cd client && cp .env.example .env.local    (Unix)"
 	@echo "cd client && bun run dev   # или: npm run dev"
-	@echo "Откройте URL Vite; VITE_API_URL=/ и proxy на http://127.0.0.1:8000"
+	@echo "Откройте URL Vite; VITE_API_URL=/ и proxy на http://127.0.0.1:18400"
 
 backend-venv: ## Python venv в backend/.venv
 	cd backend && (python3 -m venv .venv || py -3 -m venv .venv)
@@ -80,7 +80,7 @@ client-test: ## Vitest
 client-lint: ## ESLint клиента
 	cd client && (bun run lint 2>/dev/null || npm run lint)
 
-health: ## Проверить /api/health (API :8000 и web :$(WEB_PORT))
+health: ## Проверить /api/health (API :18400 и web :$(WEB_PORT))
 	@echo "API direct: $(API_URL)"
 	@curl -sf "$(API_URL)" && echo || echo "API not reachable"
 	@echo "Via web:    $(WEB_URL)"

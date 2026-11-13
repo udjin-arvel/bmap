@@ -196,7 +196,7 @@ export function AuthModal() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setServerDraft(demo ? "http://localhost:8000" : server)}
+                  onClick={() => setServerDraft(demo ? "http://127.0.0.1:18400" : server)}
                   className={cn(
                     "rounded-md border px-2.5 py-1 text-xs",
                     !demo ? "border-foreground bg-card" : "text-muted-foreground",
